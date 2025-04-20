@@ -2,9 +2,9 @@ Package: KosigDashboard
 Title: Dashboard of SNB Business Cycle Signals
 Version: 0.0.0.9000
 Authors@R: 
-    person("Lionel Roman", "Saxer", , "lionel.saxer@gmail.com", role = "cre")
+    person("Lionel Roman", "Saxer", email = "lionel.saxer@gmail.com", role = "cre")
 Description: A dashboard showing the publicly available quantitative information of the SNB Business Cycle Signals.
-License: What license is it under?
+License: file LICENSE
 Imports: 
     config,
     golem,
