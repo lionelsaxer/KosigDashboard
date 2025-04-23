@@ -8,6 +8,7 @@
 #' @import RCurl
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
+#' @importFrom magrittr %>%
 run_app <- function(
   onStart = NULL,
   options = list(),
@@ -30,7 +31,23 @@ run_app <- function(
   }
 
   # Read data into global environment
-  .GlobalEnv$df_ct_base <- readr::read_csv2("data/snbkosiq.csv", skip = 2)
+  .GlobalEnv$df_ct_base <- readr::read_csv2(
+    "data/snbkosiq.csv", skip = 2, show_col_types = FALSE
+  )
+
+  # Get variable mapping
+  .GlobalEnv$df_variable_mapping <- readr::read_csv(
+    "mappings/variable_mapping.csv", show_col_types = FALSE
+  )
+
+  # Clean data
+  .GlobalEnv$df_ct_base <- .GlobalEnv$df_ct_base %>%
+    tidyr::pivot_wider(id_cols = Date, names_from = D0, values_from = Value) %>%
+    # dplyr::rename_with(
+    #   ~ df_variable_mapping$Variable[match(., df_variable_mapping$Code)],
+    #   .cols = dplyr::all_of(df_variable_mapping$Code)
+    # )
+
 
   with_golem_options(
     app = shinyApp(
