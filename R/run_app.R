@@ -16,6 +16,7 @@ run_app <- function(
   ...
 ) {
 
+  # If data file does not exist, download data via API and write data file
   if (!file.exists("data/snbkosiq.csv")) {
 
     localDataFile <- "data/snbkosiq.csv"
@@ -28,6 +29,7 @@ run_app <- function(
 
   }
 
+  # Read data into global environment
   .GlobalEnv$df_ct_base <- readr::read_csv2("data/snbkosiq.csv", skip = 2)
 
   with_golem_options(
