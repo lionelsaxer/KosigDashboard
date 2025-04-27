@@ -17,11 +17,12 @@ mod_zeitreihen_ui <- function(id) {
     sidebar = bslib::sidebar(
       shinyWidgets::sliderTextInput(
         inputId = ns("period_selector"), label = "Zeitspanne",
-        choices = quarter_range, selected = c(quarter_range[1], quarter_range[4])
+        choices = quarter_range,
+        selected = c(quarter_range[1], quarter_range[length(quarter_range)])
       ),
       shiny::selectizeInput(
         inputId = ns("question_selector"), label = "Frage",
-        choices = .GlobalEnv$df_variable_mapping$Variable
+        choices = .GlobalEnv$df_varmap$Variable
       ),
       width = 400
     ),
@@ -40,8 +41,8 @@ mod_zeitreihen_server <- function(id){
 
     # Map question labels to variable name as reactive expression
     question <- reactive({
-      .GlobalEnv$df_varmap$Variable[
-        grep(input$question_selector, .GlobalEnv$df_varmap$Code, fixed = TRUE)
+      .GlobalEnv$df_varmap$Code[
+        grep(input$question_selector, .GlobalEnv$df_varmap$Variable, fixed = TRUE)
       ]
     })
 
@@ -52,14 +53,14 @@ mod_zeitreihen_server <- function(id){
     output$plot_out <- plotly::renderPlotly({
       p <- .GlobalEnv$df_ct_base %>%
         dplyr::mutate(
-          quarter_date = lubridate::yq(quarter)
+          Quarter_date = lubridate::yq(Quarter)
         ) %>%
-        dplyr::filter(quarter >= period()[1] & quarter <= period()[2]) %>%
+        dplyr::filter(Quarter >= period()[1] & Quarter <= period()[2]) %>%
         ggplot2::ggplot(
-          ggplot2::aes(x = quarter_date, y = !!dplyr::sym(question()))
+          ggplot2::aes(x = Quarter, y = !!dplyr::sym(question()))
         ) +
         ggplot2::geom_line(color = "blue") +
-        ggplot2::scale_x_date() +
+        zoo::scale_x_yearqtr(format = "%Y Q%q") +
         ggplot2::theme_minimal()
 
       plotly::ggplotly(p)
