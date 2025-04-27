@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS
+#' @importFrom magrittr %>%
 mod_zeitreihen_ui <- function(id) {
   ns <- NS(id)
 
@@ -36,6 +37,33 @@ mod_zeitreihen_ui <- function(id) {
 mod_zeitreihen_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+
+    # Map question labels to variable name as reactive expression
+    question <- reactive({
+      .GlobalEnv$df_varmap$Variable[
+        grep(input$question_selector, .GlobalEnv$df_varmap$Code, fixed = TRUE)
+      ]
+    })
+
+    # Define reactive for time period
+    period <- reactive(input$period_selector)
+
+    # Plot
+    output$plot_out <- plotly::renderPlotly({
+      p <- .GlobalEnv$df_ct_base %>%
+        dplyr::mutate(
+          quarter_date = lubridate::yq(quarter)
+        ) %>%
+        dplyr::filter(quarter >= period()[1] & quarter <= period()[2]) %>%
+        ggplot2::ggplot(
+          ggplot2::aes(x = quarter_date, y = !!dplyr::sym(question()))
+        ) +
+        ggplot2::geom_line(color = "blue") +
+        ggplot2::scale_x_date() +
+        ggplot2::theme_minimal()
+
+      plotly::ggplotly(p)
+    })
 
   })
 }
