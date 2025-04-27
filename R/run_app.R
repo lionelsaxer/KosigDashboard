@@ -82,7 +82,7 @@ run_app <- function(
   }
 
   # Get variable mapping
-  .GlobalEnv$df_variable_mapping <- readr::read_csv(
+  .GlobalEnv$df_varmap <- readr::read_csv(
     paste0(here::here(), "/mappings/variable_mapping.csv"),
     show_col_types = FALSE
   )
