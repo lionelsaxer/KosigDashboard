@@ -94,6 +94,9 @@ run_app <- function(
       Quarter = zoo::as.yearqtr(stringr::str_remove(Date, "-")),
       .keep = "unused",
       .before = 1
+    ) %>%
+    dplyr::mutate(
+      across(-Quarter, ~ as.numeric(.))
     )
     # dplyr::rename_with(
     #   ~ df_variable_mapping$Variable[match(., df_variable_mapping$Code)],
