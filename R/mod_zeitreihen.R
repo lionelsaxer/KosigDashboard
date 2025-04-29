@@ -51,6 +51,8 @@ mod_zeitreihen_server <- function(id){
 
     # Plot
     output$plot_out <- plotly::renderPlotly({
+
+      # Define base plot
       p <- .GlobalEnv$df_ct_base %>%
         dplyr::mutate(
           Quarter_date = lubridate::yq(Quarter)
@@ -59,11 +61,30 @@ mod_zeitreihen_server <- function(id){
         ggplot2::ggplot(
           ggplot2::aes(x = Quarter, y = !!dplyr::sym(question()))
         ) +
-        ggplot2::geom_line(color = "blue") +
+        ggplot2::geom_line(color = "blue", linewidth = .75) +
+        ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
         zoo::scale_x_yearqtr(format = "%Y Q%q") +
         ggplot2::theme_minimal()
 
-      plotly::ggplotly(p)
+      # If it is a likert variable we plot
+      if (!question() %in% c("LELJ", "LEFJ", "EPNV", "IERWM", "IERWJ")) {
+        p_out <- p +
+          ggplot2::scale_y_continuous(limits = c(-1.5, 1.5)) +
+          ggplot2::labs(x = "", y = "")
+
+      } else if (question() == "IERWM") {
+        p_out <- p +
+          ggplot2::scale_y_continuous(limits = c(-2, 4)) +
+          ggplot2::labs(x = "", y = "%")
+
+      } else {
+        p_out <- p +
+          ggplot2::scale_y_continuous(limits = c(-1.5, 3)) +
+          ggplot2::labs(x = "", y = "%")
+      }
+
+      plotly::ggplotly(p_out)
+
     })
 
   })
