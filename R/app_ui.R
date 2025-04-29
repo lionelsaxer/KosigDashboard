@@ -17,6 +17,10 @@ app_ui <- function(request) {
         bslib::nav_panel(
           title = "Zeitreihen",
           mod_zeitreihen_ui("zeitreihen")
+        ),
+        bslib::nav_panel(
+          title = "Hilfe",
+          mod_help_ui("help")
         )
       )
     )
