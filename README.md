@@ -6,5 +6,6 @@
 to_install <- c(
   "bslib", "golem", "plotly", "RCurl", "shiny", "shinyWidgets", "tidyverse", "zoo"
 )
+install.packages(to_install)
 ```
 3. Run `golem::run_dev()` in the console to start the app locally.
